@@ -1,158 +1,58 @@
-# Clock e Temporizadores
+# README - Repositório de Atividades
 
-Este repositório contém dois projetos de atividades que envolvem o uso de temporizadores e LEDs na plataforma Raspberry Pi Pico.
+Este repositório contém duas atividades desenvolvidas para a placa Raspberry Pi Pico utilizando a biblioteca `pico/stdlib.h` e o `hardware/timer.h`. Ambas as atividades envolvem o controle de LEDs com temporizações e interação com botões.
 
-## Atividade 1: Temporizador Periódico
+## Atividade 1 - Sequenciamento de LEDs com Temporizador
 
-Este projeto utiliza um temporizador periódico para alternar entre três LEDs (vermelho, amarelo e verde) a cada 3 segundos.
+### Descrição
+A Atividade 1 implementa um sistema no qual três LEDs (vermelho, amarelo e verde) piscam sequencialmente a cada 3 segundos. O comportamento é gerenciado por uma função de callback do temporizador.
 
-### Código
+### Funcionamento
+- Inicialmente, todos os LEDs estão apagados.
+- A cada 3 segundos, apenas um LED é ligado, seguindo a ordem: vermelho → amarelo → verde.
+- O sistema repete esse ciclo indefinidamente.
+- Durante a execução, mensagens de log são exibidas no console para indicar o tempo transcorrido.
 
-```c
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "hardware/timer.h"
-#include "testes.h"
+### Componentes Utilizados
+- LEDs: Vermelho (GPIO 13), Amarelo (GPIO 12), Verde (GPIO 11).
+- Temporizador para acionar a função de callback periodicamente.
 
-// Define as constantes
-#define LED_red 13
-#define LED_yellow 12
-#define LED_green 11
+### Estrutura do Código
+- A função `repeating_timer_callback()` é chamada a cada 3 segundos para alterar o estado dos LEDs.
+- O `main()` inicializa os pinos dos LEDs e registra a função de callback.
+- Uma mensagem é impressa a cada segundo para monitoramento.
+- O módulo `testes.h` é chamado para a execução de testes automáticos.
 
-// Guarda o estado
-int state = 0;
+## Atividade 2 - Controle de LEDs via Botão
 
-// Função de callback
-bool repeating_timer_callback(struct repeating_timer *t) {
-    // Inicia com todos desligados e, dependendo da variável state, acende o próximo LED
-    gpio_put(LED_red, 0);
-    gpio_put(LED_yellow, 0);
-    gpio_put(LED_green, 0);
+### Descrição
+A Atividade 2 implementa um sistema em que um botão é utilizado para acionar três LEDs. Uma vez ativado, os LEDs são desligados um a um em intervalos de 3 segundos, respeitando um estado sequencial.
 
-    if (state == 0) {
-        gpio_put(LED_red, 1);
-    } else if (state == 1) {
-        gpio_put(LED_yellow, 1);
-    } else if (state == 2) {
-        gpio_put(LED_green, 1);
-    }
+### Funcionamento
+- Quando o botão é pressionado, os três LEDs são acesos simultaneamente.
+- Um temporizador de callback é utilizado para desligar os LEDs um a um a cada 3 segundos.
+- Enquanto o processo de desligamento estiver em andamento, pressionar o botão não tem efeito.
+- Ao final do ciclo, o sistema permite uma nova interação pelo botão.
 
-    // Atualiza o valor do estado
-    if (state == 2) {
-        state = 0;
-    } else {
-        state++;
-    }
-        
-    return true;    
-}
+### Componentes Utilizados
+- LEDs: Azul (GPIO 12), Vermelho (GPIO 13), Verde (GPIO 11).
+- Botão (GPIO 5) para ativar os LEDs.
+- Temporizador para desligar os LEDs sequencialmente.
+- Variável `led_active` para evitar acionamento durante a execução do ciclo.
 
-int main() {
-    stdio_init_all();
+### Estrutura do Código
+- A função `turn_on_callback()` é responsável por desligar os LEDs um a um.
+- O `main()` inicializa os LEDs e o botão, verificando continuamente se ele foi pressionado.
+- O módulo `testes.h` é chamado para a execução de testes automáticos.
+- O sistema impede que o botão seja acionado novamente enquanto a sequência de desligamento estiver em execução.
 
-    // Execute os testes
-    run_tests();
+## Como Executar
+1. Compile o código para a Raspberry Pi Pico.
+2. Carregue o binário na placa.
+3. Para a Atividade 1, observe a sequência de LEDs piscando automaticamente.
+4. Para a Atividade 2, pressione o botão para iniciar o ciclo de acendimento e desligamento dos LEDs.
 
-    // Inicializa os pinos e chama a função de callback a cada 3 segundos
-    gpio_init(LED_red);
-    gpio_set_dir(LED_red, GPIO_OUT);
+## Observações
+- Certifique-se de que a biblioteca `pico-sdk` esteja corretamente configurada no ambiente de desenvolvimento.
+- O código foi estruturado para ser extensível e pode ser modificado para ajustar tempos de temporização ou incluir novos comportamentos.
 
-    gpio_init(LED_yellow);
-    gpio_set_dir(LED_yellow, GPIO_OUT);
-
-    gpio_init(LED_green);
-    gpio_set_dir(LED_green, GPIO_OUT);
-
-    struct repeating_timer timer;
-
-    add_repeating_timer_ms(3000, repeating_timer_callback, NULL, &timer);
-
-    while (true) {
-        sleep_ms(1000);
-        printf("Passou 1 segundo\n");
-    }
-}
-```c
-
-# Atividade 2: Temporizador com Botão
-
-Este projeto utiliza um temporizador e um botão para controlar três LEDs (vermelho, azul e verde). Os LEDs são ativados quando o botão é pressionado, e o temporizador apaga cada LED sequencialmente a cada 3 segundos.
-
-## Código
-
-```c
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "hardware/timer.h"
-#include "testes.h"
-
-// Declaração das constantes
-#define LED_red 13
-#define LED_blue 12
-#define LED_green 11
-#define BUTTON_a 5
-
-// Variável booleana para saber se o led está aceso
-bool led_active = false;
-
-// Guarda o estado
-int state = 0;
-
-// Função do temporizador
-int64_t turn_on_callback(alarm_id_t id, void *user_data) {
-    // Apaga um LED dependendo do valor da variável state
-    if (state == 0) {
-        gpio_put(LED_blue, 0);
-    } else if (state == 1) {
-        gpio_put(LED_red, 0);
-    } else if (state == 2) {
-        gpio_put(LED_green, 0);
-    } 
-
-    // Incrementa mais 1 na variável state. Se passar de 2, o valor volta para 0
-    state++;
-    if (state > 2) {
-        state = 0;
-    }
-}
-
-int main() {
-    stdio_init_all();
-
-    // Executa todos os testes
-    run_tests();
-
-    // Inicializa os LEDs e o botão
-    gpio_init(LED_red);
-    gpio_set_dir(LED_red, GPIO_OUT);
-
-    gpio_init(LED_blue);
-    gpio_set_dir(LED_blue, GPIO_OUT);
-
-    gpio_init(LED_green);
-    gpio_set_dir(LED_green, GPIO_OUT);
-
-    gpio_init(BUTTON_a);
-    gpio_set_dir(BUTTON_a, GPIO_IN);
-    gpio_pull_up(BUTTON_a);
-
-    struct repeating_timer timer;
-
-    while (true) {
-        // Verifica se o botão foi pressionado e se os LEDs estão ativos
-        if (gpio_get(BUTTON_a) == 0 && led_active == false) {
-            led_active = true;
-            gpio_put(LED_blue, 1);
-            gpio_put(LED_red, 1);
-            gpio_put(LED_green, 1);
-
-            int counter = 0;
-            while (counter < 3) {
-                add_alarm_in_ms(3000, turn_on_callback, NULL, false);
-                sleep_ms(3000);
-                counter++;
-            }
-        }
-        led_active = false;
-    }
-}
