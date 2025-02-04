@@ -14,7 +14,7 @@ bool led_active = false;
 int state = 0;
 
 //Função do temporizador
-int64_t turn_on_callback(alarm_id_t id, void *user_data){
+int64_t turn_off_callback(alarm_id_t id, void *user_data){
     //Apaga um LED dependendo do valor da variavel state
     if (state == 0){
         gpio_put(LED_blue, 0);
@@ -64,7 +64,7 @@ int main() {
 
             int counter = 0;
             while (counter < 3){
-                add_alarm_in_ms(3000, turn_on_callback, NULL, false);
+                add_alarm_in_ms(3000, turn_off_callback, NULL, false);
                 sleep_ms(3000);
                 counter++;
             }
