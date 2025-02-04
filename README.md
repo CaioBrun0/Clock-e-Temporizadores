@@ -2,7 +2,7 @@
 
 Este repositório contém duas atividades desenvolvidas para a placa Raspberry Pi Pico utilizando a biblioteca `pico/stdlib.h` e o `hardware/timer.h`. Ambas as atividades envolvem o controle de LEDs com temporizações e interação com botões.
 
-## Atividade 1 - Sequenciamento de LEDs com Temporizador
+## Atividade 1 - Semáfaro
 
 ### Descrição
 A Atividade 1 implementa um sistema no qual três LEDs (vermelho, amarelo e verde) piscam sequencialmente a cada 3 segundos. O comportamento é gerenciado por uma função de callback do temporizador.
