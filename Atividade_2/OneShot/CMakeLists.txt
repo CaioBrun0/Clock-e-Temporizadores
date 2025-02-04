@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(OneShot OneShot.c )
+add_executable(OneShot OneShot.c testes.c)
 
 pico_set_program_name(OneShot "OneShot")
 pico_set_program_version(OneShot "0.1")
