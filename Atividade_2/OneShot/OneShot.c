@@ -46,18 +46,16 @@ int main() {
 
     while (true) {
         if(gpio_get(BUTTON_a) == 0 && led_active == false){
-            led_active == true;
+            led_active = true;
             int counter = 0;
             gpio_put(LED_red, 1);
             gpio_put(LED_yellow, 1);
             gpio_put(LED_green, 1);
             while (counter < 3){
-                printf("Chamou: %d vez(es)\n", counter+1);
                 add_alarm_in_ms(3000, turn_on_callback, NULL, false);
                 sleep_ms(3000);
                 counter++;
             }
-            printf("Terminou!\n");
 
         }
 
