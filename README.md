@@ -72,6 +72,7 @@ int main() {
         printf("Passou 1 segundo\n");
     }
 }
+```c
 
 # Atividade 2: Temporizador com Botão
 
