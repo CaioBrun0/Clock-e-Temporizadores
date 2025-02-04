@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Teporizador_periodico Teporizador_periodico.c )
+add_executable(Teporizador_periodico Teporizador_periodico.c testes.c)
 
 pico_set_program_name(Teporizador_periodico "Teporizador_periodico")
 pico_set_program_version(Teporizador_periodico "0.1")

@@ -1,13 +1,18 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/timer.h"
+#include "testes.h"
 
+//Define as constantes
 #define LED_red 13
 #define LED_yellow 12
 #define LED_green 11
+//Guarda o estado
 int state = 0;
 
+//Função de callback
 bool repeating_timer_callback(struct repeating_timer *t){
+    //Inicia com todos desligados e dependendo da variável state, ele acende o próximo LED
     gpio_put(LED_red, 0);
     gpio_put(LED_yellow, 0);
     gpio_put(LED_green, 0);
@@ -20,6 +25,7 @@ bool repeating_timer_callback(struct repeating_timer *t){
         gpio_put(LED_green, 1);
     }
 
+    //Atualiza o valor do estado
     if (state == 2){
         state = 0;
     } else {
@@ -32,6 +38,10 @@ bool repeating_timer_callback(struct repeating_timer *t){
 int main() {
     stdio_init_all();
 
+    // Execute os testes
+    run_tests();
+
+    //Inicializa os pinos e chama a função de callback a cada 3 segundos
     gpio_init(LED_red);
     gpio_set_dir(LED_red, GPIO_OUT);
 
